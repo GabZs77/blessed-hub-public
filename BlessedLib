@@ -35,7 +35,7 @@ local redzlib = {
         Dark = {
             ["Color Hub 1"] = ColorSequence.new({
                 ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 40, 40)),
-                ColorSequenceKeypoint.new(0.50, Color3.fromRGB(47.5, 47.5, 47.5)),
+                ColorSequenceKeypoint.new(0.50, ColorSequenceKeypoint.new(0.50, Color3.fromRGB(47.5, 47.5, 47.5)),
                 ColorSequenceKeypoint.new(1.00, Color3.fromRGB(40, 40, 40))
             }),
             ["Color Hub 2"] = Color3.fromRGB(45, 45, 45),
@@ -2012,6 +2012,109 @@ function redzlib:MakeWindow(Configs)
         table.insert(redzlib.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
         Tab.Cont = Container
         
+        if not FirstTab then
+            -- Criar container do chat
+            local ChatContainer = Create("Frame", Container, {
+                Size = UDim2.new(1, 0, 0, 400),
+                BackgroundColor3 = Theme["Color Hub 2"],
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, 0, 0, 0)
+            })
+            
+            Make("Corner", ChatContainer, UDim.new(0, 8))
+            
+            -- Cabeçalho do chat
+            local ChatHeader = Create("Frame", ChatContainer, {
+                Size = UDim2.new(1, 0, 0, 40),
+                BackgroundColor3 = Theme["Color Hub 1"],
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, 0, 0, 0)
+            })
+            
+            Make("Corner", ChatHeader, UDim.new(0, 8))
+            Make("Gradient", ChatHeader)
+            
+            local ChatTitle = Create("TextLabel", ChatHeader, {
+                Size = UDim2.new(1, -20, 1, 0),
+                Position = UDim2.new(0, 10, 0, 0),
+                BackgroundTransparency = 1,
+                Text = "🤖 Angel IA - Chat",
+                TextColor3 = Theme["Color Text"],
+                TextSize = 16,
+                Font = Enum.Font.GothamBold,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+            
+            -- Frame do chat
+            local ChatFrame = Create("ScrollingFrame", ChatContainer, {
+                Size = UDim2.new(1, -10, 1, -90),
+                Position = UDim2.new(0, 5, 0, 45),
+                BackgroundColor3 = Color3.fromRGB(30, 30, 35),
+                BorderSizePixel = 0,
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                ScrollBarThickness = 5
+            })
+            
+            Make("Corner", ChatFrame, UDim.new(0, 6))
+            
+            local ChatLayout = Create("UIListLayout", ChatFrame, {
+                Padding = UDim.new(0, 8),
+                SortOrder = Enum.SortOrder.LayoutOrder
+            })
+            
+            -- Input para mensagens
+            local InputFrame = Create("Frame", ChatContainer, {
+                Size = UDim2.new(1, -10, 0, 40),
+                Position = UDim2.new(0, 5, 1, -45),
+                BackgroundColor3 = Theme["Color Hub 2"],
+                BorderSizePixel = 0
+            })
+            
+            Make("Corner", InputFrame, UDim.new(0, 6))
+            
+            local Input = Create("TextBox", InputFrame, {
+                Size = UDim2.new(1, -60, 1, 0),
+                Position = UDim2.new(0, 5, 0, 0),
+                PlaceholderText = "Digite sua mensagem...",
+                TextColor3 = Theme["Color Text"],
+                TextSize = 14,
+                Font = Enum.Font.Gotham,
+                BackgroundTransparency = 1,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+            
+            local SendButton = Create("TextButton", InputFrame, {
+                Size = UDim2.new(0, 50, 0, 30),
+                Position = UDim2.new(1, -55, 0.5, -15),
+                Text = "Enviar",
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 12,
+                Font = Enum.Font.GothamBold,
+                BackgroundColor3 = Theme["Color Theme"],
+                BorderSizePixel = 0
+            })
+            
+            Make("Corner", SendButton, UDim.new(0, 4))
+            
+            -- Função para enviar mensagens
+            local function sendMessage()
+                if Input.Text and Input.Text ~= "" then
+                    AskAI(ChatFrame, Input.Text)
+                    Input.Text = ""
+                end
+            end
+            
+            SendButton.MouseButton1Click:Connect(sendMessage)
+            Input.FocusLost:Connect(function(enter)
+                if enter then
+                    sendMessage()
+                end
+            end)
+            
+            -- Mensagem inicial
+            AddMessage(ChatFrame, "Angel IA", "👋 Olá! Sou Angel IA. Como posso te ajudar hoje?")
+        end
+        
         function Tab:Disable()
             Container.Parent = nil
             CreateTween({LabelTitle, "TextTransparency", 0.3, 0.35})
@@ -2510,7 +2613,7 @@ function redzlib:MakeWindow(Configs)
                 else
                     table.foreach(NewOptions, function(_,Name)
                         AddOption(Name)
-                    end)
+                    end
                 end
             end
             function Dropdown:Remove(Option)
@@ -2840,115 +2943,16 @@ function redzlib:MakeWindow(Configs)
             return DiscordInvite
         end
         
-        --== ADICIONAR CHAT ANGEL IA NA PRIMEIRA ABA ==--
-        if not FirstTab then
-            -- Criar container do chat
-            local ChatContainer = Create("Frame", Container, {
-                Size = UDim2.new(1, 0, 0, 400),
-                BackgroundColor3 = Theme["Color Hub 2"],
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, 0, 0, 0)
-            })
-            
-            Make("Corner", ChatContainer, UDim.new(0, 8))
-            
-            -- Cabeçalho do chat
-            local ChatHeader = Create("Frame", ChatContainer, {
-                Size = UDim2.new(1, 0, 0, 40),
-                BackgroundColor3 = Theme["Color Hub 1"],
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, 0, 0, 0)
-            })
-            
-            Make("Corner", ChatHeader, UDim.new(0, 8))
-            Make("Gradient", ChatHeader)
-            
-            local ChatTitle = Create("TextLabel", ChatHeader, {
-                Size = UDim2.new(1, -20, 1, 0),
-                Position = UDim2.new(0, 10, 0, 0),
-                BackgroundTransparency = 1,
-                Text = "🤖 Angel IA - Chat",
-                TextColor3 = Theme["Color Text"],
-                TextSize = 16,
-                Font = Enum.Font.GothamBold,
-                TextXAlignment = Enum.TextXAlignment.Left
-            })
-            
-            -- Frame do chat
-            local ChatFrame = Create("ScrollingFrame", ChatContainer, {
-                Size = UDim2.new(1, -10, 1, -90),
-                Position = UDim2.new(0, 5, 0, 45),
-                BackgroundColor3 = Color3.fromRGB(30, 30, 35),
-                BorderSizePixel = 0,
-                AutomaticCanvasSize = Enum.AutomaticSize.Y,
-                ScrollBarThickness = 5
-            })
-            
-            Make("Corner", ChatFrame, UDim.new(0, 6))
-            
-            local ChatLayout = Create("UIListLayout", ChatFrame, {
-                Padding = UDim.new(0, 8),
-                SortOrder = Enum.SortOrder.LayoutOrder
-            })
-            
-            -- Input para mensagens
-            local InputFrame = Create("Frame", ChatContainer, {
-                Size = UDim2.new(1, -10, 0, 40),
-                Position = UDim2.new(0, 5, 1, -45),
-                BackgroundColor3 = Theme["Color Hub 2"],
-                BorderSizePixel = 0
-            })
-            
-            Make("Corner", InputFrame, UDim.new(0, 6))
-            
-            local Input = Create("TextBox", InputFrame, {
-                Size = UDim2.new(1, -60, 1, 0),
-                Position = UDim2.new(0, 5, 0, 0),
-                PlaceholderText = "Digite sua mensagem...",
-                TextColor3 = Theme["Color Text"],
-                TextSize = 14,
-                Font = Enum.Font.Gotham,
-                BackgroundTransparency = 1,
-                TextXAlignment = Enum.TextXAlignment.Left
-            })
-            
-            local SendButton = Create("TextButton", InputFrame, {
-                Size = UDim2.new(0, 50, 0, 30),
-                Position = UDim2.new(1, -55, 0.5, -15),
-                Text = "Enviar",
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-                TextSize = 12,
-                Font = Enum.Font.GothamBold,
-                BackgroundColor3 = Theme["Color Theme"],
-                BorderSizePixel = 0
-            })
-            
-            Make("Corner", SendButton, UDim.new(0, 4))
-            
-            -- Função para enviar mensagens
-            local function sendMessage()
-                if Input.Text and Input.Text ~= "" then
-                    AskAI(ChatFrame, Input.Text)
-                    Input.Text = ""
-                end
-            end
-            
-            SendButton.MouseButton1Click:Connect(sendMessage)
-            Input.FocusLost:Connect(function(enter)
-                if enter then
-                    sendMessage()
-                end
-            end)
-            
-            -- Mensagem inicial
-            AddMessage(ChatFrame, "Angel IA", "👋 Olá! Sou Angel IA. Como posso te ajudar hoje?")
-        end
-        
         return Tab
     end
     
     CloseButton.Activated:Connect(Window.CloseBtn)
     MinimizeButton.Activated:Connect(Window.MinimizeBtn)
+
+    -- Adicionar aba da IA automaticamente
+    Window:MakeTab({"Angel IA", "bot"})
+    Window:SelectTab(1) -- Selecionar a aba da IA por padrão
+
     return Window
 end
 
